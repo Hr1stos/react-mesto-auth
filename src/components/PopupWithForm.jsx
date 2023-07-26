@@ -1,11 +1,11 @@
 import { useEffect } from 'react'
 
-export const PopupWithForm = ({ name, title, form, children, buttonText, isOpen, onClose, onSubmit }) => {
+export const PopupWithForm = ({ name, title, form, children, buttonText, isOpen, onClose, onSubmit, isFormValid }) => {
 	useEffect(() => {
 		if (!isOpen) return
 
-		function handleESC(e) {
-			if (e.key === 'Escape') {
+		const handleESC = (evt) => {
+			if (evt.key === 'Escape') {
 				onClose()
 			}
 		}
@@ -20,7 +20,7 @@ export const PopupWithForm = ({ name, title, form, children, buttonText, isOpen,
 			className={`popup popup_type_${name} ${isOpen ? `popup_opened` : ""}`}
 			onClick={onClose}
 		>
-			<div className="popup__container" onClick={(e) => e.stopPropagation()}>
+			<div className="popup__container" onClick={(evt) => evt.stopPropagation()}>
 				<button
 					aria-label="Закрыть"
 					type="button"
@@ -32,13 +32,16 @@ export const PopupWithForm = ({ name, title, form, children, buttonText, isOpen,
 				</h2>
 				<form
 					name={name}
-					className={`popup__form popup__form_type_${form}`}
+					className={`popup__form form popup__form_type_${form}`}
+					noValidate
 					onSubmit={onSubmit}
 				>
 					{children}
 					<button
 						type="submit"
-						className="popup__submit-button"
+						className={`popup__submit-button ${isFormValid ? "popup__submit-button_disabled" : ""}`}
+						onSubmit={onSubmit}
+						disabled={isFormValid}
 					>
 						{buttonText}
 					</button>

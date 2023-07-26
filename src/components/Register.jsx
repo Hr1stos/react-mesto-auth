@@ -1,45 +1,67 @@
-import { useState } from 'react';
+import { useRef } from 'react';
 import { Link } from "react-router-dom"
+import { FormValidator } from "../utils/FormValidator";
 
 export const Register = ({ onRegister }) => {
-	const [email, setEmail] = useState('');
-	const [password, setPassword] = useState('');
+	const emailInputRef = useRef();
+	const passwordInputRef = useRef();
 
-const handleSubmit = (e) => {
-	e.preventDefault();
-	onRegister({ email, password });
+	const { values, errors, isFormValid, handleChange } = FormValidator();
+
+const handleSubmit = (evt) => {
+	evt.preventDefault();
+	onRegister({
+		email: emailInputRef.current.value,
+		password: passwordInputRef.current.value
+	});
 }
 
 	return (
 		<section className="login">
 			<h2 className="login__title">Регистрация</h2>
 			<form
-				className="login__form"
+				className="login__form form"
 				onSubmit={handleSubmit}
+				noValidate
 				>
 				<input
 					type="email"
+					name="email"
 					className="login__input"
 					placeholder="Email"
 					required
-					value={email || ''}
-					onChange={({ target: { value } }) => setEmail(value)}
+					value={values.email || ''}
+					onChange={handleChange}
+					ref={emailInputRef}
 				/>
-				<span id="error-login" className="popup__error"></span>
+				<span
+					id="error-email"
+					className={`inputError ${errors.email ? `inputError_visible` : ""}`}
+				>
+					{errors.email}
+				</span>
 				<input
 					type="password"
+					name="password"
 					className="login__input"
 					placeholder="Пароль"
 					minLength="4"
 					required
-					value={password || ''}
-					onChange={({ target: { value } }) => setPassword(value)}
+					value={values.password || ''}
+					onChange={handleChange}
+					ref={passwordInputRef}
 				/>
-				<span id="error-login" className="popup__error"></span>
+				<span
+					id="error-password"
+					className={`inputError ${errors.password ? `inputError_visible` : ""}`}
+				>
+					{errors.password}
+				</span>
 				<button
 					type="submit"
-					className="login__submit-button"
-					>
+					className={`login__submit-button ${!isFormValid ? "login__submit-button_disabled" : ""}`}
+					disabled={!isFormValid}
+				>
 					Зарегистрироваться
 				</button>
 				<Link

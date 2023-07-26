@@ -1,32 +1,27 @@
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { PopupWithForm } from "./PopupWithForm";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import { FormValidator } from "../utils/FormValidator";
 
 export const EditProfilePopup = ({ isOpen, onClose, onUpdateUser, isLoad }) => {
 	const currentUser = useContext(CurrentUserContext);
-	const [name, setName] = useState("");
-	const [description, setDescription] = useState("");
+	const { values, errors, isFormValid, setIsFormValid, setValues, handleChange } = FormValidator();
 
 	useEffect(() => {
-		setName(currentUser.name);
-		setDescription(currentUser.about);
+		setIsFormValid(true);
+		setValues({
+			name: currentUser.name,
+			about: currentUser.about
+		})
 	}, [currentUser, isOpen]);
 
-	function handleSubmit(evt) {
+	const handleSubmit = (evt) => {
 		evt.preventDefault();
 
 		onUpdateUser({
-			name,
-			about: description,
+			name: values.name,
+			about: values.about
 		});
-	}
-
-	function handleNameChange(evt) {
-		setName(evt.target.value);
-	}
-
-	function handleDescriptionChange(evt) {
-		setDescription(evt.target.value);
 	}
 
 	return (
@@ -37,6 +32,7 @@ export const EditProfilePopup = ({ isOpen, onClose, onUpdateUser, isLoad }) => {
 			isOpen={isOpen}
 			onClose={onClose}
 			onSubmit={handleSubmit}
+			isFormValid={!isFormValid}
 		>
 			<input
 				type="text"
@@ -47,10 +43,15 @@ export const EditProfilePopup = ({ isOpen, onClose, onUpdateUser, isLoad }) => {
 				required
 				minLength="2"
 				maxLength="40"
-				value={name || ""}
-				onChange={handleNameChange}
+				value={values.name || ""}
+				onChange={handleChange}
 			/>
-			<span id="error-name" className="popup__error"></span>
+			<span
+				id="error-name"
+				className={`inputError ${errors.name ? `inputError_visible` : ""}`}
+			>
+				{errors.name}
+			</span>
 			<input
 				type="text"
 				id="about"
@@ -60,10 +61,15 @@ export const EditProfilePopup = ({ isOpen, onClose, onUpdateUser, isLoad }) => {
 				required
 				minLength="2"
 				maxLength="200"
-				value={description || ""}
-				onChange={handleDescriptionChange}
+				value={values.about || ""}
+				onChange={handleChange}
 			/>
-			<span id="error-about" className="popup__error"></span>
+			<span
+				id="error-about"
+				className={`inputError ${errors.about ? `inputError_visible` : ""}`}
+			>
+				{errors.about}
+			</span>
 		</PopupWithForm>
 	)
 }

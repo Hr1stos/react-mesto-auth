@@ -1,14 +1,16 @@
 import { useRef, useEffect } from 'react';
 import { PopupWithForm } from "./PopupWithForm";
+import { FormValidator } from "../utils/FormValidator";
 
 export const EditAvatarPopup = ({ isOpen, onClose, onUpdateAvatar, isLoad }) => {
 	const avatarInputRef = useRef();
+	const { values, errors, isFormValid, handleChange, resetForm } = FormValidator();
 
 	useEffect(() => {
-		avatarInputRef.current.value = "";
+		resetForm();
 	}, [isOpen]);
 
-	function handleSubmit(evt) {
+	const handleSubmit = (evt) => {
 		evt.preventDefault();
 
 		onUpdateAvatar({
@@ -25,6 +27,7 @@ export const EditAvatarPopup = ({ isOpen, onClose, onUpdateAvatar, isLoad }) => 
 			isOpen={isOpen}
 			onClose={onClose}
 			onSubmit={handleSubmit}
+			isFormValid={!isFormValid}
 		>
 			<input
 				type="url"
@@ -32,10 +35,17 @@ export const EditAvatarPopup = ({ isOpen, onClose, onUpdateAvatar, isLoad }) => 
 				name="avatar"
 				placeholder="Ссылка на аватар"
 				className="popup__input"
+				onChange={handleChange}
 				required
+				value={values.avatar || ''}
 				ref={avatarInputRef}
 			/>
-			<span id="error-avatar" className="popup__error"></span>
+			<span
+				id="error-avatar"
+				className={`inputError ${errors.avatar ? `inputError_visible` : ""}`}
+			>
+				{errors.avatar}
+			</span>
 		</PopupWithForm>
 	)
 }

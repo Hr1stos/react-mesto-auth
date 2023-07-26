@@ -9,11 +9,11 @@ export const Card = ({ card, onCardLike, onCardDelete, onCardClick }) => {
 		`card__button_like ${isLiked && "card__button_like_active"}`
 	);
 
-	function handleLikeClick() {
+	const handleLikeClick = () => {
 		onCardLike(card);
 	}
 
-	function handleDeleteClick() {
+	const handleDeleteClick = () => {
 		onCardDelete(card);
 	}
 

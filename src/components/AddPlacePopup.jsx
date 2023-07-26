@@ -1,21 +1,23 @@
 import { useRef, useEffect } from 'react';
 import { PopupWithForm } from "./PopupWithForm";
+import { FormValidator } from "../utils/FormValidator";
 
 export const AddPlacePopup = ({ isOpen, onClose, onAddPlace, isLoad }) => {
 	const nameInputRef = useRef();
 	const linkInputRef = useRef();
 
+	const { values, errors, isFormValid, handleChange, resetForm } = FormValidator();
+
 	useEffect(() => {
-		nameInputRef.current.value = "";
-		linkInputRef.current.value = "";
+		resetForm()
 	}, [isOpen]);
 
-	function handleSubmit(evt) {
+	const handleSubmit = (evt) => {
 		evt.preventDefault();
 
 		onAddPlace({
 			name: nameInputRef.current.value,
-			link: linkInputRef.current.value,
+			link: linkInputRef.current.value
 		});
 	}
 
@@ -27,6 +29,7 @@ export const AddPlacePopup = ({ isOpen, onClose, onAddPlace, isLoad }) => {
 			isOpen={isOpen}
 			onClose={onClose}
 			onSubmit={handleSubmit}
+			isFormValid={!isFormValid}
 		>
 			<input
 				type="text"
@@ -37,9 +40,16 @@ export const AddPlacePopup = ({ isOpen, onClose, onAddPlace, isLoad }) => {
 				required
 				minLength="2"
 				maxLength="30"
+				onChange={handleChange}
+				value={values.name || ''}
 				ref={nameInputRef}
 			/>
-			<span id="error-text" className="popup__error"></span>
+			<span
+				id="error-text"
+				className={`inputError ${errors.name ? `inputError_visible` : ""}`}
+			>
+				{errors.name}
+			</span>
 			<input
 				type="url"
 				id="link"
@@ -47,9 +57,16 @@ export const AddPlacePopup = ({ isOpen, onClose, onAddPlace, isLoad }) => {
 				placeholder="Ссылка на картинку"
 				className="popup__input"
 				required
+				onChange={handleChange}
+				value={values.link || ''}
 				ref={linkInputRef || ""}
 			/>
-			<span id="error-link" className="popup__error"></span>
+			<span
+				id="error-link"
+				className={`inputError ${errors.link ? `inputError_visible` : ""}`}
+			>
+				{errors.link}
+			</span>
 		</PopupWithForm>
 	)
 }

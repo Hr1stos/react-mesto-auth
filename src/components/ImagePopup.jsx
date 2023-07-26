@@ -4,8 +4,8 @@ export const ImagePopup = ({ card, isOpen, onClose }) => {
 	useEffect(() => {
 		if (!isOpen) return
 
-		function handleESC(e) {
-			if (e.key === 'Escape') {
+		function handleESC(evt) {
+			if (evt.key === 'Escape') {
 				onClose()
 			}
 		}
@@ -18,16 +18,17 @@ export const ImagePopup = ({ card, isOpen, onClose }) => {
 	return (
 		<div
 			className={`popup popup_type_image
-		${isOpen ? "popup_opened" : ""}`}
+			${isOpen ? "popup_opened" : ""}`}
 			onClick={onClose}
 		>
-			<figure className="popup__container-image" onClick={(e) => e.stopPropagation()}>
+			<figure className="popup__container-image" onClick={(evt) => evt.stopPropagation()}>
 				<button
 					aria-label="Закрыть"
 					type="button"
 					className="popup__close-button"
 					onClick={onClose}
-				></button>
+				>
+				</button>
 				<img
 					src={card.link}
 					alt={card.name}

@@ -6,8 +6,8 @@ export const InfoTooltip = ({ isOpen, onClose, isSuccess }) => {
 	useEffect(() => {
 		if (!isOpen) return
 
-		function handleESC(e) {
-			if (e.key === 'Escape') {
+		function handleESC(evt) {
+			if (evt.key === 'Escape') {
 				onClose()
 			}
 		}
@@ -22,7 +22,7 @@ export const InfoTooltip = ({ isOpen, onClose, isSuccess }) => {
 			className={`popup popup_type_info-tooltip ${isOpen ? `popup_opened` : ""}`}
 			onClick={onClose}
 		>
-			<div className="popup__container popup__container_type" onClick={(e) => e.stopPropagation()} >
+			<div className="popup__container" onClick={(evt) => evt.stopPropagation()} >
 				<button
 					aria-label="Закрыть"
 					type="button"

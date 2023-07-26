@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Route, Routes, Navigate, useNavigate } from 'react-router-dom';
+import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import { api } from '../utils/Api';
+import * as authApi from "../utils/authApi";
+import { ProtectedRoute } from "./ProtectedRoute";
 import { Header } from './Header';
 import { Main } from './Main';
 import { Footer } from './Footer';
@@ -7,13 +11,11 @@ import { EditProfilePopup } from "./EditProfilePopup";
 import { AddPlacePopup } from "./AddPlacePopup";
 import { EditAvatarPopup } from "./EditAvatarPopup";
 import { ImagePopup } from "./ImagePopup";
-import { CurrentUserContext } from "../contexts/CurrentUserContext";
-import { api } from '../utils/Api';
-import * as authApi from "../utils/authApi";
+import { DeleteCardPopup } from "./DeleteCardPopup";
 import { Login } from "./Login";
 import { Register } from "./Register";
-import { ProtectedRoute } from "./ProtectedRoute";
-import { InfoTooltip } from "../components/InfoTooltip";
+import { InfoTooltip } from "./InfoTooltip";
+
 
 
 const App = () => {
@@ -22,13 +24,16 @@ const App = () => {
 	const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
 	const [isImagePopupOpen, setIsImagePopupOpen] = useState(false);
 	const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
-	const [selectedCard, setSelectedCard] = useState({})
+	const [isDeleteCardOpen, setIsDeleteCardPopupOpen] = useState(false);
+	const [openMenu, setOpenMenu] = useState(false);
+	const [currentСardId, setCurrentСardId] = useState({});
 	const [currentUser, setCurrentUser] = useState({});
+	const [selectedCard, setSelectedCard] = useState({});
 	const [cards, setCards] = useState([]);
-	const [isLoading, setIsLoading] = useState('')
+	const [isLoading, setIsLoading] = useState('');
 	const [loggedIn, setLoggedIn] = useState(false);
 	const [userData, setUserData] = useState('');
-	const [isInfoTooltipStatus, setIsInfoTooltipStatus] = useState(null);
+	const [isInfoTooltipStatus, setIsInfoTooltipStatus] = useState({});
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -45,88 +50,6 @@ const App = () => {
 	useEffect(() => {
 		handleTokenCheck();
 	}, [])
-
-	const handleCardClick = (card) => {
-		setSelectedCard(card);
-		setIsImagePopupOpen(true)
-	}
-
-	const closeAllPopups = () => {
-		setIsEditProfilePopupOpen(false);
-		setIsAddPlacePopupOpen(false);
-		setIsEditAvatarPopupOpen(false);
-		setIsImagePopupOpen(false);
-		setIsInfoTooltipOpen(false);
-		setSelectedCard({});
-	}
-
-	function handleCardLike(card) {
-		const isLiked = card.likes.some((i) => i._id === currentUser._id);
-		api
-			.changeLikeCardStatus(card._id, isLiked)
-			.then((newCard) => {
-				setCards((state) =>
-					state.map((c) => (c._id === card._id ? newCard : c))
-				);
-			})
-			.catch((err) => {
-				console.log(`handleCardLike - ошибка: ${err}`);
-			});
-	}
-
-	function handleCardDelete(card) {
-		const isOwn = card._id === currentUser._id;
-		api
-			.deleteCard(card._id, !isOwn)
-			.then(() => {
-				setCards((state) => state.filter((res) => res._id !== card._id));
-			})
-			.catch((err) => {
-				console.log(`handleCardDelete - ошибка: ${err}`);
-			});
-	}
-
-	function handleUpdateUser({ name, about }) {
-		setIsLoading(true)
-		api
-			.setDataUser({ name, about })
-			.then((userData) => {
-				setCurrentUser(userData);
-				closeAllPopups();
-				setIsLoading(false)
-			})
-			.catch((err) => {
-				console.log(`handleUpdateUser - ошибка: ${err}`);
-			});
-	}
-
-	function handleUpdateAvatar({ avatar }) {
-		setIsLoading(true)
-		api
-			.setUserAvatar({ avatar })
-			.then((userAvatar) => {
-				setCurrentUser(userAvatar);
-				closeAllPopups();
-				setIsLoading(false)
-			})
-			.catch((err) => {
-				console.log(`handleUpdateAvatar - ошибка: ${err}`);
-			});
-	}
-
-	function handleAddPlaceSubmit({ name, link }) {
-		setIsLoading(true)
-		api
-			.addNewCard({ name, link })
-			.then((newCard) => {
-				setCards([newCard, ...cards]);
-				closeAllPopups();
-				setIsLoading(false)
-			})
-			.catch((err) => {
-				console.log(`handleAddPlaceSubmit - ошибка: ${err}`);
-			});
-	}
 
 	const handleTokenCheck = () => {
 		const jwt = localStorage.getItem('jwt');
@@ -151,14 +74,17 @@ const App = () => {
 			.then((data) => {
 				if (data) {
 					setIsInfoTooltipStatus(true);
+					setIsInfoTooltipOpen(true)
 					navigate('/sign-in');
 				}
 			})
 			.catch((err) => {
+				setIsInfoTooltipStatus(false);
+				setIsInfoTooltipOpen(true)
 				console.log(`onRegister - ошибка: ${err}`);
 			})
-			.finally(setIsInfoTooltipOpen(true))
 	}
+
 	const onLogin = ({ email, password }) => {
 		authApi
 			.authorization({ email, password })
@@ -182,6 +108,101 @@ const App = () => {
 		setLoggedIn(false);
 		navigate('/sign-in');
 		setUserData('');
+		setOpenMenu(false)
+	}
+
+	const handleCardClick = (card) => {
+		setSelectedCard(card);
+		setIsImagePopupOpen(true)
+	}
+
+	const isClickOpenMenu = () => {
+		setOpenMenu(!openMenu);
+	}
+
+	const closeAllPopups = () => {
+		setIsEditProfilePopupOpen(false);
+		setIsAddPlacePopupOpen(false);
+		setIsEditAvatarPopupOpen(false);
+		setIsImagePopupOpen(false);
+		setIsInfoTooltipOpen(false);
+		setIsDeleteCardPopupOpen(false);
+		setSelectedCard({});
+	}
+
+	const handleCardLike = (card) => {
+		const isLiked = card.likes.some((i) => i._id === currentUser._id);
+		api
+			.changeLikeCardStatus(card._id, isLiked)
+			.then((newCard) => {
+				setCards((state) =>
+					state.map((c) => (c._id === card._id ? newCard : c))
+				);
+			})
+			.catch((err) => {
+				console.log(`handleCardLike - ошибка: ${err}`);
+			});
+	}
+
+	const handleCardDelete = () => {
+		setIsLoading(true)
+		api
+			.deleteCard(currentСardId._id)
+			.then(() => {
+				setCards((state) => state.filter((res) => res._id !== currentСardId._id));
+				closeAllPopups();
+				setIsLoading(false)
+			})
+			.catch((err) => {
+				console.log(`handleCardDelete - ошибка: ${err}`);
+			});
+	}
+
+	const handleDeleteClick = (card) => {
+		setCurrentСardId(card)
+		setIsDeleteCardPopupOpen(true);
+	};
+
+	const handleUpdateUser = ({ name, about }) => {
+		setIsLoading(true)
+		api
+			.setDataUser({ name, about })
+			.then((userData) => {
+				setCurrentUser(userData);
+				closeAllPopups();
+				setIsLoading(false)
+			})
+			.catch((err) => {
+				console.log(`handleUpdateUser - ошибка: ${err}`);
+			});
+	}
+
+	const handleUpdateAvatar = ({ avatar }) => {
+		setIsLoading(true)
+		api
+			.setUserAvatar({ avatar })
+			.then((userAvatar) => {
+				setCurrentUser(userAvatar);
+				closeAllPopups();
+				setIsLoading(false)
+			})
+			.catch((err) => {
+				console.log(`handleUpdateAvatar - ошибка: ${err}`);
+			});
+	}
+
+	const handleAddPlaceSubmit = ({ name, link }) => {
+		setIsLoading(true)
+		api
+			.addNewCard({ name, link })
+			.then((newCard) => {
+				setCards([newCard, ...cards]);
+				closeAllPopups();
+				setIsLoading(false)
+			})
+			.catch((err) => {
+				console.log(`handleAddPlaceSubmit - ошибка: ${err}`);
+			});
 	}
 
 	return (
@@ -192,6 +213,9 @@ const App = () => {
 						<Header
 							onExit={onExit}
 							userEmail={userData}
+							loggedIn={loggedIn}
+							isOpen={openMenu}
+							onMenu={isClickOpenMenu}
 						/>
 
 						<Routes>
@@ -204,9 +228,9 @@ const App = () => {
 										onEditProfile={setIsEditProfilePopupOpen}
 										onAddPlace={setIsAddPlacePopupOpen}
 										onEditAvatar={setIsEditAvatarPopupOpen}
+										onCardDelete={handleDeleteClick}
 										onCardClick={handleCardClick}
 										onCardLike={handleCardLike}
-										onCardDelete={handleCardDelete}
 										cards={cards}
 									/>
 								}
@@ -282,16 +306,13 @@ const App = () => {
 							isSuccess={isInfoTooltipStatus}
 						/>
 
-						{/*<div class="popup popup_type_delete">
-						<div class="popup__container">
-							<button aria-label="Закрыть" type="button"
-								class="popup__close-button"></button>
-							<h2 class="popup__title popup__title_type_delete">Вы уверены?</h2>
-							<form name="popup-form" class="popup__form popup__form_type_delete">
-								<button type="submit" class="popup__submit-button popup__submit-button_type_delete">Да</button>
-							</form>
-						</div>
-					</div>*/}
+						{/****PopupDeleteCard****/}
+						<DeleteCardPopup
+							isOpen={isDeleteCardOpen}
+							onClose={closeAllPopups}
+							isDeleteCard={handleCardDelete}
+							isLoad={isLoading}
+						/>
 					</div>
 				</div>
 			</div >
