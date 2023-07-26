@@ -1,19 +1,7 @@
-import { useEffect } from 'react'
+import { usePopupClose } from '../hooks/usePopupClose'
 
 export const PopupWithForm = ({ name, title, form, children, buttonText, isOpen, onClose, onSubmit, isFormValid }) => {
-	useEffect(() => {
-		if (!isOpen) return
-
-		const handleESC = (evt) => {
-			if (evt.key === 'Escape') {
-				onClose()
-			}
-		}
-
-		document.addEventListener('keydown', handleESC)
-
-		return () => document.removeEventListener('keydown', handleESC)
-	}, [isOpen, onClose])
+	usePopupClose(isOpen, onClose)
 
 	return (
 		<div
@@ -40,7 +28,6 @@ export const PopupWithForm = ({ name, title, form, children, buttonText, isOpen,
 					<button
 						type="submit"
 						className={`popup__submit-button ${isFormValid ? "popup__submit-button_disabled" : ""}`}
-						onSubmit={onSubmit}
 						disabled={isFormValid}
 					>
 						{buttonText}

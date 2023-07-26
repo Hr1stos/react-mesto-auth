@@ -12,7 +12,6 @@ export const Header = ({ onExit, userEmail, loggedIn, isOpen, onMenu }) => {
 					className="header__logo"
 				/>
 				
-				{!loggedIn &&
 					<Routes>
 						<Route path="/sign-in" element={
 							<Link to="/sign-up" className="header__link">Регистрация</Link>
@@ -23,11 +22,7 @@ export const Header = ({ onExit, userEmail, loggedIn, isOpen, onMenu }) => {
 							<Link to="/sign-in" className="header__link">Войти</Link>
 						}
 						/>
-					</Routes>
-				}
 
-				{loggedIn &&
-					<Routes>
 						<Route
 							path="/"
 							element={
@@ -37,7 +32,6 @@ export const Header = ({ onExit, userEmail, loggedIn, isOpen, onMenu }) => {
 							}
 						/>
 					</Routes>
-				}
 			</div>
 
 			{loggedIn &&

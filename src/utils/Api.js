@@ -4,6 +4,10 @@ class Api {
 		this._headers = options.headers;
 	}
 
+	_request(endpoint, options) {
+		return fetch(this._url + endpoint, options).then(this._handleResponse)
+	}
+
 	_handleResponse(res) {
 		if (res.ok) {
 			return res.json();
@@ -12,62 +16,51 @@ class Api {
 	}
 
 	getDataCards() {
-		return fetch(`${this._url}/cards`, {
-			headers: this._headers
-		})
-		.then(this._handleResponse)
+		return this._request('/cards', { headers: this._headers })
 	}
 
 	getDataUser() {
-		return fetch(`${this._url}/users/me`, {
-			headers: this._headers
-		})
-		.then(this._handleResponse)
+		return this._request('/users/me', { headers: this._headers })
 	}
 
 	setDataUser(data) {
-		return fetch(`${this._url}/users/me`, {
+		return this._request('/users/me', {
 			method: 'PATCH',
 			headers: this._headers,
 			body: JSON.stringify({
 				name: data.name,
-				about: data.about
-			})
+				about: data.about })
 		})
-		.then(this._handleResponse)
 	}
 
 	setUserAvatar(avatar) {
-		return fetch(`${this._url}/users/me/avatar`, {
+		return this._request('/users/me/avatar', {
 			method: 'PATCH',
 			headers: this._headers,
 			body: JSON.stringify(avatar)
 		})
-		.then(this._handleResponse)
 	}
 
 	addNewCard(card) {
-		return fetch(`${this._url}/cards`, {
+		return this._request('/cards', {
 			method: 'POST',
 			headers: this._headers,
 			body: JSON.stringify(card)
 		})
-		.then(this._handleResponse)
 	}
 
 	deleteCard(cardId) {
-		return fetch(`${this._url}/cards/${cardId}`, {
+		return this._request(`/cards/${cardId}`, {
 			method: 'DELETE',
-			headers: this._headers,
+			headers: this._headers
 		})
-		.then(this._handleResponse)
 	}
 
 	changeLikeCardStatus(cardId, isLiked) {
-		return fetch(`${this._url}/cards/${cardId}/likes`, {
+		return this._request(`/cards/${cardId}/likes`, {
 			method: isLiked ? "DELETE" : "PUT",
 			headers: this._headers,
-		}).then(this._handleResponse);
+		})
 	}
 }
 

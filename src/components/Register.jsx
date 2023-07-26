@@ -1,18 +1,14 @@
-import { useRef } from 'react';
 import { Link } from "react-router-dom"
-import { FormValidator } from "../utils/FormValidator";
+import { useFormValidator } from "../hooks/useFormValidator";
 
 export const Register = ({ onRegister }) => {
-	const emailInputRef = useRef();
-	const passwordInputRef = useRef();
-
-	const { values, errors, isFormValid, handleChange } = FormValidator();
+	const { values, errors, isFormValid, handleChange } = useFormValidator();
 
 const handleSubmit = (evt) => {
 	evt.preventDefault();
 	onRegister({
-		email: emailInputRef.current.value,
-		password: passwordInputRef.current.value
+		email: values.email,
+		password: values.password
 	});
 }
 
@@ -32,7 +28,6 @@ const handleSubmit = (evt) => {
 					required
 					value={values.email || ''}
 					onChange={handleChange}
-					ref={emailInputRef}
 				/>
 				<span
 					id="error-email"
@@ -49,7 +44,6 @@ const handleSubmit = (evt) => {
 					required
 					value={values.password || ''}
 					onChange={handleChange}
-					ref={passwordInputRef}
 				/>
 				<span
 					id="error-password"

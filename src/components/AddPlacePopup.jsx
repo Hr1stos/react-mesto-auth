@@ -1,12 +1,9 @@
-import { useRef, useEffect } from 'react';
+import { useEffect } from 'react';
 import { PopupWithForm } from "./PopupWithForm";
-import { FormValidator } from "../utils/FormValidator";
+import { useFormValidator } from "../hooks/useFormValidator";
 
 export const AddPlacePopup = ({ isOpen, onClose, onAddPlace, isLoad }) => {
-	const nameInputRef = useRef();
-	const linkInputRef = useRef();
-
-	const { values, errors, isFormValid, handleChange, resetForm } = FormValidator();
+	const { values, errors, isFormValid, handleChange, resetForm } = useFormValidator();
 
 	useEffect(() => {
 		resetForm()
@@ -16,8 +13,8 @@ export const AddPlacePopup = ({ isOpen, onClose, onAddPlace, isLoad }) => {
 		evt.preventDefault();
 
 		onAddPlace({
-			name: nameInputRef.current.value,
-			link: linkInputRef.current.value
+			name: values.name,
+			link: values.link
 		});
 	}
 
@@ -42,7 +39,6 @@ export const AddPlacePopup = ({ isOpen, onClose, onAddPlace, isLoad }) => {
 				maxLength="30"
 				onChange={handleChange}
 				value={values.name || ''}
-				ref={nameInputRef}
 			/>
 			<span
 				id="error-text"
@@ -59,7 +55,6 @@ export const AddPlacePopup = ({ isOpen, onClose, onAddPlace, isLoad }) => {
 				required
 				onChange={handleChange}
 				value={values.link || ''}
-				ref={linkInputRef || ""}
 			/>
 			<span
 				id="error-link"

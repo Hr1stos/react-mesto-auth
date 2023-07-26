@@ -1,10 +1,9 @@
-import { useRef, useEffect } from 'react';
+import { useEffect } from 'react';
 import { PopupWithForm } from "./PopupWithForm";
-import { FormValidator } from "../utils/FormValidator";
+import { useFormValidator } from "../hooks/useFormValidator";
 
 export const EditAvatarPopup = ({ isOpen, onClose, onUpdateAvatar, isLoad }) => {
-	const avatarInputRef = useRef();
-	const { values, errors, isFormValid, handleChange, resetForm } = FormValidator();
+	const { values, errors, isFormValid, handleChange, resetForm } = useFormValidator();
 
 	useEffect(() => {
 		resetForm();
@@ -14,7 +13,7 @@ export const EditAvatarPopup = ({ isOpen, onClose, onUpdateAvatar, isLoad }) => 
 		evt.preventDefault();
 
 		onUpdateAvatar({
-			avatar: avatarInputRef.current.value,
+			avatar: values.avatar,
 		});
 	}
 
@@ -38,7 +37,6 @@ export const EditAvatarPopup = ({ isOpen, onClose, onUpdateAvatar, isLoad }) => 
 				onChange={handleChange}
 				required
 				value={values.avatar || ''}
-				ref={avatarInputRef}
 			/>
 			<span
 				id="error-avatar"

@@ -43,7 +43,7 @@ const App = () => {
 				setCards(cards);
 			})
 			.catch((err) => {
-				console.log(`Promise.all - ошибка: ${err}`);
+				console.error(`Promise.all - ошибка: ${err}`);
 			});
 	}, [])
 
@@ -64,7 +64,7 @@ const App = () => {
 				navigate("/");
 			})
 			.catch((err) => {
-				console.log(`handleTokenCheck - ошибка: ${err}`)
+				console.error(`handleTokenCheck - ошибка: ${err}`)
 			});
 	};
 
@@ -74,15 +74,16 @@ const App = () => {
 			.then((data) => {
 				if (data) {
 					setIsInfoTooltipStatus(true);
-					setIsInfoTooltipOpen(true)
 					navigate('/sign-in');
 				}
 			})
 			.catch((err) => {
 				setIsInfoTooltipStatus(false);
-				setIsInfoTooltipOpen(true)
-				console.log(`onRegister - ошибка: ${err}`);
+				console.error(`onRegister - ошибка: ${err}`);
 			})
+			.finally(() => {
+				setIsInfoTooltipOpen(true);
+			});
 	}
 
 	const onLogin = ({ email, password }) => {
@@ -99,7 +100,7 @@ const App = () => {
 			.catch((err) => {
 				setIsInfoTooltipStatus(false);
 				setIsInfoTooltipOpen(true);
-				console.log(`onRegister - ошибка: ${err}`);
+				console.error(`onLogin - ошибка: ${err}`)
 			})
 	}
 
@@ -140,7 +141,7 @@ const App = () => {
 				);
 			})
 			.catch((err) => {
-				console.log(`handleCardLike - ошибка: ${err}`);
+				console.error(`handleCardLike - ошибка: ${err}`);
 			});
 	}
 
@@ -154,7 +155,7 @@ const App = () => {
 				setIsLoading(false)
 			})
 			.catch((err) => {
-				console.log(`handleCardDelete - ошибка: ${err}`);
+				console.error(`handleCardDelete - ошибка: ${err}`);
 			});
 	}
 
@@ -173,7 +174,7 @@ const App = () => {
 				setIsLoading(false)
 			})
 			.catch((err) => {
-				console.log(`handleUpdateUser - ошибка: ${err}`);
+				console.error(`handleUpdateUser - ошибка: ${err}`);
 			});
 	}
 
@@ -187,7 +188,7 @@ const App = () => {
 				setIsLoading(false)
 			})
 			.catch((err) => {
-				console.log(`handleUpdateAvatar - ошибка: ${err}`);
+				console.error(`handleUpdateAvatar - ошибка: ${err}`);
 			});
 	}
 
@@ -201,7 +202,7 @@ const App = () => {
 				setIsLoading(false)
 			})
 			.catch((err) => {
-				console.log(`handleAddPlaceSubmit - ошибка: ${err}`);
+				console.error(`handleAddPlaceSubmit - ошибка: ${err}`);
 			});
 	}
 

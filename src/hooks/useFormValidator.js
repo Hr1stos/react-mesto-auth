@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export const FormValidator = () => {
+export const useFormValidator = () => {
 	const [values, setValues] = useState({});
 	const [errors, setErrors] = useState({});
 	const [isFormValid, setIsFormValid] = useState(false);

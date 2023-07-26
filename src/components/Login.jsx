@@ -1,18 +1,14 @@
-import { useRef } from 'react';
-import { FormValidator } from "../utils/FormValidator";
+import { useFormValidator } from "../hooks/useFormValidator";
 
 
 export const Login = ({ onLogin }) => {
-	const emailInputRef = useRef();
-	const passwordInputRef = useRef();
-
-	const { values, errors, isFormValid, handleChange } = FormValidator();
+	const { values, errors, isFormValid, handleChange } = useFormValidator();
 
 	const handleSubmit = (evt) => {
 		evt.preventDefault();
 		onLogin({
-			email: emailInputRef.current.value,
-			password: passwordInputRef.current.value
+			email: values.email,
+			password: values.password
 		});
 	}
 
@@ -32,7 +28,6 @@ export const Login = ({ onLogin }) => {
 					required
 					value={values.email || ''}
 					onChange={handleChange}
-					ref={emailInputRef}
 				/>
 				<span
 					id="error-email"
@@ -49,7 +44,6 @@ export const Login = ({ onLogin }) => {
 					required
 					value={values.password || ''}
 					onChange={handleChange}
-					ref={passwordInputRef}
 				/>
 				<span
 					id="error-password"
